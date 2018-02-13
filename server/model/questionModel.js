@@ -14,5 +14,5 @@ const questionSchema = new Schema({
   three: String,
 });
 
-module.exports = mongoose.model('First', questionSchema)
+module.exports = mongoose.model('First', questionSchema);
 

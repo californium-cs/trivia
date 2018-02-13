@@ -2,7 +2,7 @@
   "name": "build-tools",
   "version": "1.0.0",
   "scripts": {
-    "webpack": "webpack",
+    "webpack": "webpack -w",
     "start": "nodemon ./server/server.js",
     "start-dev": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -27,6 +27,7 @@
     "sass-loader": "^6.0.6",
     "socket.io": "^2.0.4",
     "style-loader": "^0.19.1",
+    "trivia-api": "^1.0.0",
     "webpack": "^3.10.0"
   },
   "devDependencies": {

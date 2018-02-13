@@ -1,114 +1,69 @@
 import React, { Component } from 'react';
-import '../styles/App.css';
+import Login from './Login.jsx';
+import Game from './Game.jsx';
 import axios from 'axios';
-import Question from './Question.jsx';
-import Answer from './Answer.jsx';
-import UserName1 from './UserName1.jsx';
-import UserName2 from './UserName2.jsx';
-import Row1 from './Row1.jsx';
-import Row2 from './Row2.jsx';
-import RaisedButton from 'material-ui/RaisedButton';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-
+  constructor() {
+    super();
+    this.questions = [];
+    this.answers = [];
     this.state = {
-      time: {},
-      seconds: 10,
+      user: null,
+      question: 0,
+      // seconds: 10,
     };
-    this.timer = 0;
-    this.startTimer = this.startTimer.bind(this);
-    this.countDown = this.countDown.bind(this);
-  }
-
-  secondsToTime(secs) {
-    let hours = Math.floor(secs / (60 * 60));
-
-    let divisor_for_minutes = secs % (60 * 60);
-    let minutes = Math.floor(divisor_for_minutes / 60);
-
-    let divisor_for_seconds = divisor_for_minutes % 60;
-    let seconds = Math.ceil(divisor_for_seconds);
-
-    let obj = {
-      h: hours,
-      m: minutes,
-      s: seconds
-    };
-    return obj;
-  }
-
-  // export const fetchUser = () => async dispatch => {
-  //   const res = await axios.get('/api/current_user');
-  //   dispatch({ type: FETCH_USER, payload: res.data });
-  //   //res.data contains the googleID and id
-  // };
-
-  componentWillMount() {
-    axios.get(`/question`).then(res => {
-      const persons = res.data;
-      console.log('RES!!! ', persons);
-
-      this.setState({ persons });
-    });
+    this.setIntialState = this.setIntialState.bind(this);
+    this.login = this.login.bind(this);
+    this.signup = this.signup.bind(this);
   }
 
   componentDidMount() {
-    let timeLeftVar = this.secondsToTime(this.state.seconds);
-    this.setState({ time: timeLeftVar });
+    // Make call to server for questions
   }
 
-  startTimer() {
-    if (this.timer == 0) {
-      this.timer = setInterval(this.countDown, 1000);
-    }
-  }
-
-  countDown() {
-    // Remove one second, set state so a re-render happens.
-    let seconds = this.state.seconds - 1;
+  setIntialState() {
     this.setState({
-      time: this.secondsToTime(seconds),
-      seconds: seconds
+      user: null,
+      question: 0,
+      // seconds: 10,
     });
-
-    // Check if we're at zero.
-    if (seconds == 0) {
-      clearInterval(this.timer);
-    }
   }
 
-  answers() {
-    let array = [];
+  login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    this.setState({ user: 'not null' });
+    // axios.post('/login', { username, password }).then(res => {
+    //   console.log(res);
+    // })
+  }
 
-    for (let i = 0; i < 4; i++) {
-      array.push(
-        <RaisedButton key={i} className="Button" label="Answer 1" fullWidth={true} />
-      );
-    }
-    return array;
+  signup() {
+    const username = document.getElementById('username').innerHTML;
+    const password = document.getElementById('password').innerHTML;
+    this.setState({ user: 'not null' });
+    // axios.post('/login', { username, password }).then(res => {
+    //   console.log(res);
+    // })
   }
 
   render() {
+    let content = (
+      <div id="login">
+        <Login login={this.login} signup={this.signup} />
+      </div>
+    );
+    if (this.state.user !== null) {
+      content = (
+        <div>
+          <Game question={this.questions[this.state.question]} />
+        </div>
+      );
+    }
     return (
-      <div className="parent">
-        <div className="timer">
-          <button onClick={this.startTimer}>Start</button>
-          {this.state.time.s}
-        </div>
-
-        <div className="users">
-          <Row1 />
-          <Row2 />
-        </div>
-
-        <div className="users">
-          <UserName1 />
-          <UserName2 />
-        </div>
-        <Question />
-        {this.answers()}
+      <div>
+        { content }
       </div>
     );
   }
