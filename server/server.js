@@ -11,7 +11,13 @@ app.use(express.static(path.join(__dirname, './../client/public')));
 app.use(bodyParser.json());
 
 // mlab server
-mongoose.connect('mongodb://simon:1072322sp@ds123718.mlab.com:23718/feedme-dev').then(() => console.log('connected to mLab'));
+/*
+this works!
+*/
+mongoose.connect('mongodb://agcb:agcbmlab21@ds233208.mlab.com:33208/californium')
+                // ('mongodb://${user}:${pass}@${uri}/${db}?authSource=admin')
+        .then(() => console.log('connected to mLab'));
+        // .catch((err)=>return err;)
 
 // Send root react page
 app.get('/', (req, res) => {
