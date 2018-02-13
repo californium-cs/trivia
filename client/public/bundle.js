@@ -27486,7 +27486,7 @@ var App = function (_Component) {
         content = _react2.default.createElement(
           'div',
           null,
-          _react2.default.createElement(_Game2.default, null)
+          _react2.default.createElement(_Game2.default, { question: this.questions[this.state.question] })
         );
       }
       return _react2.default.createElement(

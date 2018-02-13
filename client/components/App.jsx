@@ -57,7 +57,7 @@ class App extends Component {
     if (this.state.user !== null) {
       content = (
         <div>
-          <Game />
+          <Game question={this.questions[this.state.question]} />
         </div>
       );
     }
