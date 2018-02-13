@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
 const path = require('path');
-dataController = require('./controllers/dataController.js');
+const dataController = require('./controllers/dataController.js');
 
 // Use the public folder to send static assets
 app.use(express.static(path.join(__dirname, './../client/public')));
