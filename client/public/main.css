@@ -10,7 +10,7 @@
 }
 
 #login-box {
-  border: 1px solid gray;
+  border: 1px solid red;
   border-radius: 4px;
   padding: 20px;
   width: 30%;
@@ -19,6 +19,24 @@
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+}
+
+@media (max-width: 800px) {
+    #login-box {
+        width: 50%;
+    }
+}
+
+@media (max-width: 500px) {
+    #login-box {
+        width: 70%;
+    }
+}
+
+@media (max-width: 340px) {
+    #login-box {
+        width: 85%;
+    }
 }
 
 #login-buttons {
