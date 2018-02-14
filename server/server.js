@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
 const path = require('path');
-dataController = require('./controllers/dataController.js');
+const dataController = require('./controllers/dataController.js');
 
 // Use the public folder to send static assets
 app.use(express.static(path.join(__dirname, './../client/public')));
@@ -13,9 +13,10 @@ app.use(bodyParser.json());
 // mlab server
 mongoose.connect('mongodb://simon:1072322sp@ds123718.mlab.com:23718/feedme-dev').then(() => console.log('connected to mLab'));
 
-// Send root react page
-app.get('/', (req, res) => {
-  // res.sendFile(path.join(__dirname, './../client/public/index.html'));
+
+// Get question data
+app.get('/getData', dataController.getData, dataController.formatData, (req, res, next) => {
+  res.send(res.locals.questionData);
 });
 
-app.listen(3001, () => console.log('listening on port 3000'));
+app.listen(3001, () => console.log('listening on port 3001'));

@@ -1,5 +1,5 @@
 const Data = require('./../model/questionModel');
-const Trivia = require('trivia-api')
+const Trivia = require('trivia-api');
 const trivia = new Trivia({ encoding: 'url3986' });
 
 const dataController = {
