@@ -35,12 +35,10 @@ app.post('/login', (req, res)=>{
   let user = req.body.name //client input
   let pw = req.body.password//client input
   console.log(`inside the login ${user} ${pw}`);
-
-  // console.log(User.find);
   User.find({ name: user, password: pw }, (err, result) => {
     console.log(result)
     if (result.length) {
-      res.send(true);
+      res.send(req.body.name);
     }
     else {
       res.send(false);
@@ -65,5 +63,16 @@ app.post('/signup',(req,res)=> {
       .then(res.send(true))
     }
   })
-})
+});
+
+app.post('/gameOver', (req,res)=>{
+  /*
+  request.body should be {"date":"20180213","score":"7"}
+   .insert() the date and score into our player's previousGames array.
+   how do I reference our user without putting some variable at global level??
+   User.insert(req.body, previousGames....)
+  */
+  console.log(req.body);
+  res.send(req.body);
+});
 app.listen(3000, () => console.log('listening on port 3000'));
