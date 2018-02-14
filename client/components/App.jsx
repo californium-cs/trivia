@@ -13,6 +13,7 @@ class App extends Component {
       question: 0,
       gameover: false,
       seconds: 10,
+      score: 0,
     };
 
     // Variable to store interval
@@ -24,6 +25,8 @@ class App extends Component {
     this.signup = this.signup.bind(this);
     this.startGame = this.startGame.bind(this);
     this.tick = this.tick.bind(this);
+    this.clickAnswer = this.clickAnswer.bind(this);
+    this.gameover = this.gameover.bind(this);
   }
 
   componentDidMount() {
@@ -77,46 +80,63 @@ class App extends Component {
       }
     } else {
       const seconds = this.state.seconds - 1;
-      this.setState({ seconds, next: false });
+      this.setState({ seconds });
     }
   }
 
   startGame() {
-    this.setState({ question: 1 });
+    this.setState({ gameover: false, question: 1, score: 0 });
     // Timer for each question
     const tick = () => { this.tick(); };
     this.interval = setInterval(tick, 1000);
-    console.log('interval', this.interval);
   }
 
   // Handle question selection
-  clickAnswer() {
-    console.log('interval', this.interval);
+  clickAnswer(correct) {
+    if (this.state.question === 10) return this.gameover();
     clearInterval(this.interval);
-    const that = this;
     setTimeout(() => {
-      const question = that.state.question + 1;
-      that.setState({
-        question, 
+      let { score, question } = this.state;
+      question += 1;
+      if (correct) score += 1;
+      this.setState({
+        question,
+        score,
         seconds: 10,
       });
-      const tick = () => { that.tick(); };
-      that.interval = setInterval(tick, 1000);
-    }, 1500);
+      const tick = () => { this.tick(); };
+      this.interval = setInterval(tick, 1000);
+    }, 1000);
+  }
+
+  gameover() {
+    clearInterval(this.interval);
+    setTimeout(() => {
+      this.setState({ gameover: true });
+    }, 1000);
   }
 
   render() {
     let content = <div id="login"><Login login={this.login} signup={this.signup} /></div>;
     if (this.state.gameover) {
-      content = <h1>Gameover!</h1>;
+      content = (
+        <div id="game-over">
+          <div className="header">
+            <h1>Gameover!</h1>
+          </div>
+          <div className="start-button">
+            <RaisedButton onClick={this.startGame} label="Play Again" backgroundColor="#7CFC00" labelColor="#FFFFFF" labelStyle={{ fontSize: 32 }} style={{ height: 120, width: 300 }} />
+          </div>
+        </div>
+      );
     } else if (this.state.user !== null) {
       if (this.state.question === 0) {
         content = (
           <div id="game">
-            <div id="header">
+            <div className="header">
               <h1>Trivia Time!</h1>
             </div>
-            <div id="start-button">
+            <div className="start-button">
               <RaisedButton onClick={this.startGame} label="Start Game" backgroundColor="#7CFC00" labelColor="#FFFFFF" labelStyle={{ fontSize: 32 }} style={{ height: 120, width: 300 }} />
             </div>
           </div>
@@ -124,11 +144,12 @@ class App extends Component {
       } else {
         content = (
           <div id="game">
-            <div id="header">
+            <div className="header">
               <h1>Trivia Time!</h1>
               <h2>Question {this.state.question}/10</h2>
+              <h3>Score {this.state.score}/10</h3>
             </div>
-            <Question question={this.questions[this.state.question - 1]} next={this.state.next} clickAnswer={this.clickAnswer} />
+            <Question question={this.questions[this.state.question - 1]} number={this.state.question} clickAnswer={this.clickAnswer} />
             <div id="timer">
               {this.state.seconds}
             </div>
