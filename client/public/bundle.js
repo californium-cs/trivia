@@ -452,7 +452,7 @@ exports.default = function (subClass, superClass) {
 
 
 var bind = __webpack_require__(92);
-var isBuffer = __webpack_require__(223);
+var isBuffer = __webpack_require__(224);
 
 /*global toString:true*/
 
@@ -2560,7 +2560,7 @@ exports.default = {
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(10);
-var normalizeHeaderName = __webpack_require__(225);
+var normalizeHeaderName = __webpack_require__(226);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -3578,12 +3578,12 @@ module.exports = function bind(fn, thisArg) {
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(10);
-var settle = __webpack_require__(226);
-var buildURL = __webpack_require__(228);
-var parseHeaders = __webpack_require__(229);
-var isURLSameOrigin = __webpack_require__(230);
+var settle = __webpack_require__(227);
+var buildURL = __webpack_require__(229);
+var parseHeaders = __webpack_require__(230);
+var isURLSameOrigin = __webpack_require__(231);
 var createError = __webpack_require__(94);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(231);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(232);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -3680,7 +3680,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(232);
+      var cookies = __webpack_require__(233);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -3765,7 +3765,7 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(227);
+var enhanceError = __webpack_require__(228);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -27410,7 +27410,7 @@ var _RaisedButton = __webpack_require__(62);
 
 var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
 
-var _axios = __webpack_require__(221);
+var _axios = __webpack_require__(222);
 
 var _axios2 = _interopRequireDefault(_axios);
 
@@ -27435,7 +27435,8 @@ var App = function (_Component) {
       user: null,
       question: 0,
       gameover: false,
-      seconds: 10
+      seconds: 10,
+      score: 0
     };
 
     // Variable to store interval
@@ -27447,6 +27448,8 @@ var App = function (_Component) {
     _this.signup = _this.signup.bind(_this);
     _this.startGame = _this.startGame.bind(_this);
     _this.tick = _this.tick.bind(_this);
+    _this.clickAnswer = _this.clickAnswer.bind(_this);
+    _this.gameover = _this.gameover.bind(_this);
     return _this;
   }
 
@@ -27529,7 +27532,7 @@ var App = function (_Component) {
         }
       } else {
         var seconds = this.state.seconds - 1;
-        this.setState({ seconds: seconds, next: false });
+        this.setState({ seconds: seconds });
       }
     }
   }, {
@@ -27537,34 +27540,50 @@ var App = function (_Component) {
     value: function startGame() {
       var _this2 = this;
 
-      this.setState({ question: 1 });
+      this.setState({ gameover: false, question: 1, score: 0 });
       // Timer for each question
       var tick = function tick() {
         _this2.tick();
       };
       this.interval = setInterval(tick, 1000);
-      console.log('interval', this.interval);
     }
 
     // Handle question selection
 
   }, {
     key: 'clickAnswer',
-    value: function clickAnswer() {
-      console.log('interval', this.interval);
+    value: function clickAnswer(correct) {
+      var _this3 = this;
+
+      if (this.state.question === 10) return this.gameover();
       clearInterval(this.interval);
-      var that = this;
       setTimeout(function () {
-        var question = that.state.question + 1;
-        that.setState({
+        var _state = _this3.state,
+            score = _state.score,
+            question = _state.question;
+
+        question += 1;
+        if (correct) score += 1;
+        _this3.setState({
           question: question,
+          score: score,
           seconds: 10
         });
         var tick = function tick() {
-          that.tick();
+          _this3.tick();
         };
-        that.interval = setInterval(tick, 1000);
-      }, 1500);
+        _this3.interval = setInterval(tick, 1000);
+      }, 1000);
+    }
+  }, {
+    key: 'gameover',
+    value: function gameover() {
+      var _this4 = this;
+
+      clearInterval(this.interval);
+      setTimeout(function () {
+        _this4.setState({ gameover: true });
+      }, 1000);
     }
   }, {
     key: 'render',
@@ -27576,9 +27595,22 @@ var App = function (_Component) {
       );
       if (this.state.gameover) {
         content = _react2.default.createElement(
-          'h1',
-          null,
-          'Gameover!'
+          'div',
+          { id: 'game-over' },
+          _react2.default.createElement(
+            'div',
+            { className: 'header' },
+            _react2.default.createElement(
+              'h1',
+              null,
+              'Gameover!'
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'start-button' },
+            _react2.default.createElement(_RaisedButton2.default, { onClick: this.startGame, label: 'Play Again', backgroundColor: '#7CFC00', labelColor: '#FFFFFF', labelStyle: { fontSize: 32 }, style: { height: 120, width: 300 } })
+          )
         );
       } else if (this.state.user !== null) {
         if (this.state.question === 0) {
@@ -27587,7 +27619,7 @@ var App = function (_Component) {
             { id: 'game' },
             _react2.default.createElement(
               'div',
-              { id: 'header' },
+              { className: 'header' },
               _react2.default.createElement(
                 'h1',
                 null,
@@ -27596,7 +27628,7 @@ var App = function (_Component) {
             ),
             _react2.default.createElement(
               'div',
-              { id: 'start-button' },
+              { className: 'start-button' },
               _react2.default.createElement(_RaisedButton2.default, { onClick: this.startGame, label: 'Start Game', backgroundColor: '#7CFC00', labelColor: '#FFFFFF', labelStyle: { fontSize: 32 }, style: { height: 120, width: 300 } })
             )
           );
@@ -27606,7 +27638,7 @@ var App = function (_Component) {
             { id: 'game' },
             _react2.default.createElement(
               'div',
-              { id: 'header' },
+              { className: 'header' },
               _react2.default.createElement(
                 'h1',
                 null,
@@ -27618,9 +27650,16 @@ var App = function (_Component) {
                 'Question ',
                 this.state.question,
                 '/10'
+              ),
+              _react2.default.createElement(
+                'h3',
+                null,
+                'Score ',
+                this.state.score,
+                '/10'
               )
             ),
-            _react2.default.createElement(_Question2.default, { question: this.questions[this.state.question - 1], next: this.state.next, clickAnswer: this.clickAnswer }),
+            _react2.default.createElement(_Question2.default, { question: this.questions[this.state.question - 1], number: this.state.question, clickAnswer: this.clickAnswer }),
             _react2.default.createElement(
               'div',
               { id: 'timer' },
@@ -31809,6 +31848,10 @@ var _RaisedButton = __webpack_require__(62);
 
 var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
 
+var _utf = __webpack_require__(221);
+
+var _utf2 = _interopRequireDefault(_utf);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -31852,29 +31895,38 @@ var Question = function (_Component) {
   _createClass(Question, [{
     key: 'click',
     value: function click(id) {
+      var _this2 = this;
+
+      var correct = false;
       if (id === this.index) {
         this.backgroundColor[id] = '#7CFC00';
+        correct = true;
       } else {
         this.backgroundColor[id] = '#DC143C';
         this.backgroundColor[this.index] = '#7CFC00';
       }
-      this.props.clickAnswer();
+      setTimeout(function () {
+        _this2.props.clickAnswer(correct);
+      }, 1000);
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       // If a new question is supplied updated properties
-      if (this.question !== this.props.question.question) {
-        this.question = this.props.question.question;
-        var answers = [].concat(_toConsumableArray(this.props.question.wrong));
-        var index = Math.floor(Math.random() * 4);
-        answers.splice(index, 0, this.props.question.right);
-        this.answers = answers;
+      if (this.props.number <= 10) {
+        if (this.question !== this.props.question.question) {
+          this.question = this.props.question.question;
+          var answers = [].concat(_toConsumableArray(this.props.question.wrong));
+          var index = Math.floor(Math.random() * 4);
+          answers.splice(index, 0, this.props.question.right);
+          this.answers = answers;
+          this.index = index;
 
-        // Reset colors from last question
-        this.backgroundColor = ['', '', '', ''];
+          // Reset colors from last question
+          this.backgroundColor = ['', '', '', ''];
+        }
       }
       return _react2.default.createElement(
         'div',
@@ -31882,20 +31934,20 @@ var Question = function (_Component) {
         _react2.default.createElement(
           'h3',
           { id: 'question' },
-          this.question
+          decodeURIComponent(this.question)
         ),
         _react2.default.createElement(_RaisedButton2.default, { onClick: function onClick() {
-            _this2.click(0);
-          }, backgroundColor: this.backgroundColor[0], label: this.answers[0], style: { margin: 10 } }),
+            _this3.click(0);
+          }, backgroundColor: this.backgroundColor[0], label: decodeURIComponent(this.answers[0]), style: { margin: 10, overflow: "hidden" } }),
         _react2.default.createElement(_RaisedButton2.default, { onClick: function onClick() {
-            _this2.click(1);
-          }, backgroundColor: this.backgroundColor[1], label: this.answers[1], style: { margin: 10 } }),
+            _this3.click(1);
+          }, backgroundColor: this.backgroundColor[1], label: decodeURIComponent(this.answers[1]), style: { margin: 10, overflow: "hidden" } }),
         _react2.default.createElement(_RaisedButton2.default, { onClick: function onClick() {
-            _this2.click(2);
-          }, backgroundColor: this.backgroundColor[2], label: this.answers[2], style: { margin: 10 } }),
+            _this3.click(2);
+          }, backgroundColor: this.backgroundColor[2], label: decodeURIComponent(this.answers[2]), style: { margin: 10, overflow: "hidden" } }),
         _react2.default.createElement(_RaisedButton2.default, { onClick: function onClick() {
-            _this2.click(3);
-          }, backgroundColor: this.backgroundColor[3], label: this.answers[3], style: { margin: 10 } })
+            _this3.click(3);
+          }, backgroundColor: this.backgroundColor[3], label: decodeURIComponent(this.answers[3]), style: { margin: 10, overflow: "hidden" } })
       );
     }
   }]);
@@ -31909,10 +31961,218 @@ exports.default = Question;
 /* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(222);
+/*! https://mths.be/utf8js v3.0.0 by @mathias */
+;(function(root) {
+
+	var stringFromCharCode = String.fromCharCode;
+
+	// Taken from https://mths.be/punycode
+	function ucs2decode(string) {
+		var output = [];
+		var counter = 0;
+		var length = string.length;
+		var value;
+		var extra;
+		while (counter < length) {
+			value = string.charCodeAt(counter++);
+			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+				// high surrogate, and there is a next character
+				extra = string.charCodeAt(counter++);
+				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
+					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+				} else {
+					// unmatched surrogate; only append this code unit, in case the next
+					// code unit is the high surrogate of a surrogate pair
+					output.push(value);
+					counter--;
+				}
+			} else {
+				output.push(value);
+			}
+		}
+		return output;
+	}
+
+	// Taken from https://mths.be/punycode
+	function ucs2encode(array) {
+		var length = array.length;
+		var index = -1;
+		var value;
+		var output = '';
+		while (++index < length) {
+			value = array[index];
+			if (value > 0xFFFF) {
+				value -= 0x10000;
+				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
+				value = 0xDC00 | value & 0x3FF;
+			}
+			output += stringFromCharCode(value);
+		}
+		return output;
+	}
+
+	function checkScalarValue(codePoint) {
+		if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
+			throw Error(
+				'Lone surrogate U+' + codePoint.toString(16).toUpperCase() +
+				' is not a scalar value'
+			);
+		}
+	}
+	/*--------------------------------------------------------------------------*/
+
+	function createByte(codePoint, shift) {
+		return stringFromCharCode(((codePoint >> shift) & 0x3F) | 0x80);
+	}
+
+	function encodeCodePoint(codePoint) {
+		if ((codePoint & 0xFFFFFF80) == 0) { // 1-byte sequence
+			return stringFromCharCode(codePoint);
+		}
+		var symbol = '';
+		if ((codePoint & 0xFFFFF800) == 0) { // 2-byte sequence
+			symbol = stringFromCharCode(((codePoint >> 6) & 0x1F) | 0xC0);
+		}
+		else if ((codePoint & 0xFFFF0000) == 0) { // 3-byte sequence
+			checkScalarValue(codePoint);
+			symbol = stringFromCharCode(((codePoint >> 12) & 0x0F) | 0xE0);
+			symbol += createByte(codePoint, 6);
+		}
+		else if ((codePoint & 0xFFE00000) == 0) { // 4-byte sequence
+			symbol = stringFromCharCode(((codePoint >> 18) & 0x07) | 0xF0);
+			symbol += createByte(codePoint, 12);
+			symbol += createByte(codePoint, 6);
+		}
+		symbol += stringFromCharCode((codePoint & 0x3F) | 0x80);
+		return symbol;
+	}
+
+	function utf8encode(string) {
+		var codePoints = ucs2decode(string);
+		var length = codePoints.length;
+		var index = -1;
+		var codePoint;
+		var byteString = '';
+		while (++index < length) {
+			codePoint = codePoints[index];
+			byteString += encodeCodePoint(codePoint);
+		}
+		return byteString;
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	function readContinuationByte() {
+		if (byteIndex >= byteCount) {
+			throw Error('Invalid byte index');
+		}
+
+		var continuationByte = byteArray[byteIndex] & 0xFF;
+		byteIndex++;
+
+		if ((continuationByte & 0xC0) == 0x80) {
+			return continuationByte & 0x3F;
+		}
+
+		// If we end up here, it’s not a continuation byte
+		throw Error('Invalid continuation byte');
+	}
+
+	function decodeSymbol() {
+		var byte1;
+		var byte2;
+		var byte3;
+		var byte4;
+		var codePoint;
+
+		if (byteIndex > byteCount) {
+			throw Error('Invalid byte index');
+		}
+
+		if (byteIndex == byteCount) {
+			return false;
+		}
+
+		// Read first byte
+		byte1 = byteArray[byteIndex] & 0xFF;
+		byteIndex++;
+
+		// 1-byte sequence (no continuation bytes)
+		if ((byte1 & 0x80) == 0) {
+			return byte1;
+		}
+
+		// 2-byte sequence
+		if ((byte1 & 0xE0) == 0xC0) {
+			byte2 = readContinuationByte();
+			codePoint = ((byte1 & 0x1F) << 6) | byte2;
+			if (codePoint >= 0x80) {
+				return codePoint;
+			} else {
+				throw Error('Invalid continuation byte');
+			}
+		}
+
+		// 3-byte sequence (may include unpaired surrogates)
+		if ((byte1 & 0xF0) == 0xE0) {
+			byte2 = readContinuationByte();
+			byte3 = readContinuationByte();
+			codePoint = ((byte1 & 0x0F) << 12) | (byte2 << 6) | byte3;
+			if (codePoint >= 0x0800) {
+				checkScalarValue(codePoint);
+				return codePoint;
+			} else {
+				throw Error('Invalid continuation byte');
+			}
+		}
+
+		// 4-byte sequence
+		if ((byte1 & 0xF8) == 0xF0) {
+			byte2 = readContinuationByte();
+			byte3 = readContinuationByte();
+			byte4 = readContinuationByte();
+			codePoint = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0C) |
+				(byte3 << 0x06) | byte4;
+			if (codePoint >= 0x010000 && codePoint <= 0x10FFFF) {
+				return codePoint;
+			}
+		}
+
+		throw Error('Invalid UTF-8 detected');
+	}
+
+	var byteArray;
+	var byteCount;
+	var byteIndex;
+	function utf8decode(byteString) {
+		byteArray = ucs2decode(byteString);
+		byteCount = byteArray.length;
+		byteIndex = 0;
+		var codePoints = [];
+		var tmp;
+		while ((tmp = decodeSymbol()) !== false) {
+			codePoints.push(tmp);
+		}
+		return ucs2encode(codePoints);
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	root.version = '3.0.0';
+	root.encode = utf8encode;
+	root.decode = utf8decode;
+
+}( false ? this.utf8 = {} : exports));
+
 
 /***/ }),
 /* 222 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(223);
+
+/***/ }),
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31920,7 +32180,7 @@ module.exports = __webpack_require__(222);
 
 var utils = __webpack_require__(10);
 var bind = __webpack_require__(92);
-var Axios = __webpack_require__(224);
+var Axios = __webpack_require__(225);
 var defaults = __webpack_require__(64);
 
 /**
@@ -31955,14 +32215,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(96);
-axios.CancelToken = __webpack_require__(238);
+axios.CancelToken = __webpack_require__(239);
 axios.isCancel = __webpack_require__(95);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(239);
+axios.spread = __webpack_require__(240);
 
 module.exports = axios;
 
@@ -31971,7 +32231,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 223 */
+/* 224 */
 /***/ (function(module, exports) {
 
 /*!
@@ -31998,7 +32258,7 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 224 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32006,8 +32266,8 @@ function isSlowBuffer (obj) {
 
 var defaults = __webpack_require__(64);
 var utils = __webpack_require__(10);
-var InterceptorManager = __webpack_require__(233);
-var dispatchRequest = __webpack_require__(234);
+var InterceptorManager = __webpack_require__(234);
+var dispatchRequest = __webpack_require__(235);
 
 /**
  * Create a new instance of Axios
@@ -32084,7 +32344,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 225 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32103,7 +32363,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 226 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32136,7 +32396,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 227 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32164,7 +32424,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 228 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32239,7 +32499,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 229 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32299,7 +32559,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 230 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32374,7 +32634,7 @@ module.exports = (
 
 
 /***/ }),
-/* 231 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32417,7 +32677,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 232 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32477,7 +32737,7 @@ module.exports = (
 
 
 /***/ }),
-/* 233 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32536,18 +32796,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 234 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(10);
-var transformData = __webpack_require__(235);
+var transformData = __webpack_require__(236);
 var isCancel = __webpack_require__(95);
 var defaults = __webpack_require__(64);
-var isAbsoluteURL = __webpack_require__(236);
-var combineURLs = __webpack_require__(237);
+var isAbsoluteURL = __webpack_require__(237);
+var combineURLs = __webpack_require__(238);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -32629,7 +32889,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 235 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32656,7 +32916,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 236 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32677,7 +32937,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 237 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32698,7 +32958,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 238 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32762,7 +33022,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 239 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
