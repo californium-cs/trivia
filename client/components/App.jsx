@@ -1,114 +1,144 @@
 import React, { Component } from 'react';
-import '../styles/App.css';
-import axios from 'axios';
+import Login from './Login.jsx';
 import Question from './Question.jsx';
-import Answer from './Answer.jsx';
-import UserName1 from './UserName1.jsx';
-import UserName2 from './UserName2.jsx';
-import Row1 from './Row1.jsx';
-import Row2 from './Row2.jsx';
 import RaisedButton from 'material-ui/RaisedButton';
+import axios from 'axios';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-
+  constructor() {
+    super();
+    this.questions = null;
     this.state = {
-      time: {},
+      user: null,
+      question: 0,
+      gameover: false,
       seconds: 10,
     };
-    this.timer = 0;
-    this.startTimer = this.startTimer.bind(this);
-    this.countDown = this.countDown.bind(this);
-  }
 
-  secondsToTime(secs) {
-    let hours = Math.floor(secs / (60 * 60));
+    // Variable to store interval
+    this.interval = null;
 
-    let divisor_for_minutes = secs % (60 * 60);
-    let minutes = Math.floor(divisor_for_minutes / 60);
-
-    let divisor_for_seconds = divisor_for_minutes % 60;
-    let seconds = Math.ceil(divisor_for_seconds);
-
-    let obj = {
-      h: hours,
-      m: minutes,
-      s: seconds
-    };
-    return obj;
-  }
-
-  // export const fetchUser = () => async dispatch => {
-  //   const res = await axios.get('/api/current_user');
-  //   dispatch({ type: FETCH_USER, payload: res.data });
-  //   //res.data contains the googleID and id
-  // };
-
-  componentWillMount() {
-    axios.get(`/question`).then(res => {
-      const persons = res.data;
-      console.log('RES!!! ', persons);
-
-      this.setState({ persons });
-    });
+    // Bindings 
+    this.setIntialState = this.setIntialState.bind(this);
+    this.login = this.login.bind(this);
+    this.signup = this.signup.bind(this);
+    this.startGame = this.startGame.bind(this);
+    this.tick = this.tick.bind(this);
   }
 
   componentDidMount() {
-    let timeLeftVar = this.secondsToTime(this.state.seconds);
-    this.setState({ time: timeLeftVar });
-  }
-
-  startTimer() {
-    if (this.timer == 0) {
-      this.timer = setInterval(this.countDown, 1000);
-    }
-  }
-
-  countDown() {
-    // Remove one second, set state so a re-render happens.
-    let seconds = this.state.seconds - 1;
-    this.setState({
-      time: this.secondsToTime(seconds),
-      seconds: seconds
+    // Make call to server for trivia questions
+    const that = this;
+    axios.get('/getData').then((res) => {
+      that.questions = res.data;
     });
+  }
 
-    // Check if we're at zero.
-    if (seconds == 0) {
-      clearInterval(this.timer);
+  // Reset state
+  setIntialState() {
+    this.setState({
+      user: null,
+      question: 0,
+      gameover: false,
+      seconds: 10,
+    });
+  }
+
+  login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    this.setState({ user: 'not null' });
+    // axios.post('/login', { username, password }).then(res => {
+    //   console.log(res);
+    // })
+  }
+
+  signup() {
+    const username = document.getElementById('username').innerHTML;
+    const password = document.getElementById('password').innerHTML;
+    this.setState({ user: 'not null' });
+    // axios.post('/login', { username, password }).then(res => {
+    //   console.log(res);
+    // })
+  }
+
+  // Timer function, fires every 1 second in a setInterval
+  tick() {
+    if (this.state.seconds === 1) {
+      const question = this.state.question + 1;
+      if (question > 10) {
+        clearInterval();
+        this.setState({ gameover: true });
+      } else {
+        this.setState({
+          question,
+          seconds: 10,
+        });
+      }
+    } else {
+      const seconds = this.state.seconds - 1;
+      this.setState({ seconds, next: false });
     }
   }
 
-  answers() {
-    let array = [];
+  startGame() {
+    this.setState({ question: 1 });
+    // Timer for each question
+    const tick = () => { this.tick(); };
+    this.interval = setInterval(tick, 1000);
+    console.log('interval', this.interval);
+  }
 
-    for (let i = 0; i < 4; i++) {
-      array.push(
-        <RaisedButton key={i} className="Button" label="Answer 1" fullWidth={true} />
-      );
-    }
-    return array;
+  // Handle question selection
+  clickAnswer() {
+    console.log('interval', this.interval);
+    clearInterval(this.interval);
+    const that = this;
+    setTimeout(() => {
+      const question = that.state.question + 1;
+      that.setState({
+        question, 
+        seconds: 10,
+      });
+      const tick = () => { that.tick(); };
+      that.interval = setInterval(tick, 1000);
+    }, 1500);
   }
 
   render() {
+    let content = <div id="login"><Login login={this.login} signup={this.signup} /></div>;
+    if (this.state.gameover) {
+      content = <h1>Gameover!</h1>;
+    } else if (this.state.user !== null) {
+      if (this.state.question === 0) {
+        content = (
+          <div id="game">
+            <div id="header">
+              <h1>Trivia Time!</h1>
+            </div>
+            <div id="start-button">
+              <RaisedButton onClick={this.startGame} label="Start Game" backgroundColor="#7CFC00" labelColor="#FFFFFF" labelStyle={{ fontSize: 32 }} style={{ height: 120, width: 300 }} />
+            </div>
+          </div>
+        );
+      } else {
+        content = (
+          <div id="game">
+            <div id="header">
+              <h1>Trivia Time!</h1>
+              <h2>Question {this.state.question}/10</h2>
+            </div>
+            <Question question={this.questions[this.state.question - 1]} next={this.state.next} clickAnswer={this.clickAnswer} />
+            <div id="timer">
+              {this.state.seconds}
+            </div>
+          </div>
+        );
+      }
+    }
     return (
-      <div className="parent">
-        <div className="timer">
-          <button onClick={this.startTimer}>Start</button>
-          {this.state.time.s}
-        </div>
-
-        <div className="users">
-          <Row1 />
-          <Row2 />
-        </div>
-
-        <div className="users">
-          <UserName1 />
-          <UserName2 />
-        </div>
-        <Question />
-        {this.answers()}
+      <div>
+        { content }
       </div>
     );
   }
