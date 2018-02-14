@@ -50,19 +50,38 @@ class App extends Component {
   login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    this.setState({ user: 'not null' });
-    // axios.post('/login', { username, password }).then(res => {
-    //   console.log(res);
-    // })
+    let that = this;
+	  axios.post('/login', {
+		  data: {
+			  username: username,
+			  password: password
+		  }
+	  })
+		  .then(function (response) {
+			  if (response.data === 'valid user') {
+				  that.setState({user: username});
+			  } else {
+			    console.log('invalid user');
+			  }
+		  })
   }
 
   signup() {
-    const username = document.getElementById('username').innerHTML;
-    const password = document.getElementById('password').innerHTML;
-    this.setState({ user: 'not null' });
-    // axios.post('/login', { username, password }).then(res => {
-    //   console.log(res);
-    // })
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+		let that = this;
+    axios.post('/signup', {
+    	data: {
+    		username: username,
+    		password: password
+	    }
+    }).then(res => {
+      if (res.data === "User has been saved") {
+	      that.setState({user: username});
+      } else {
+      	console.log(res.data);
+      }
+    })
   }
 
   // Timer function, fires every 1 second in a setInterval
