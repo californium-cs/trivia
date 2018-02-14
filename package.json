@@ -27,6 +27,8 @@
     "sass-loader": "^6.0.6",
     "socket.io": "^2.0.4",
     "style-loader": "^0.19.1",
+    "trivia": "^1.0.0",
+    "trivia-api": "^1.0.0",
     "webpack": "^3.10.0"
   },
   "devDependencies": {
