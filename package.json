@@ -3,10 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "webpack": "webpack -w",
-    "start": "nodemon ./server/server.js",
-    "start-dev": "webpack-dev-server",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon ./server/server.js & webpack-dev-server"
+    "xavyr-start": "webpack -w & nodemon ./server/server.js"
   },
   "repository": {
     "type": "git",

@@ -7,63 +7,45 @@ const path = require('path');
 const dataController = require('./controllers/dataController.js');
 const User = require('./model/userModel.js');
 
-
-
-
 // Use the public folder to send static assets
 app.use(express.static(path.join(__dirname, './../client/public')));
 app.use(bodyParser.json());
 
-// mlab server
-/*
-this works!
-*/
 mongoose.connect('mongodb://agcb:agcbmlab21@ds233208.mlab.com:33208/californium')
-                // ('mongodb://${user}:${pass}@${uri}/${db}?authSource=admin')
-        .then(() => console.log('connected to mLab'))
+	.then(() => console.log('connected to mLab'));
 
-
-        // .catch((err)=>return err;)
-
-// Send root react page
-app.get('/', (req, res) => {
-  // res.sendFile(path.join(__dirname, './../client/public/index.html'));
+app.get('/getData', dataController.getData, dataController.formatData, (req, res, next) => {
+	res.send(res.locals.questionData);
 });
 
 app.post('/login', (req, res)=>{
-  //I've confirmed that the following logs work correctly.
-  let user = req.body.name //client input
-  let pw = req.body.password//client input
-  console.log(`inside the login ${user} ${pw}`);
-
-  // console.log(User.find);
-  User.find({ name: user, password: pw }, (err, result) => {
-    console.log(result)
+  let username = req.body.data.username; //client input
+  let pw = req.body.data.password;//client input
+  User.find({ name: username, password: pw }, (err, result) => {
     if (result.length) {
-      res.send(true);
+      res.send('valid user');
     }
     else {
-      res.send(false);
+      res.send('invalid user');
     }
   });
-
-
-
 });
 
 app.post('/signup',(req,res)=> {
-  let user = req.body.name //client input
-  let pw = req.body.password//client input
-  User.find({name: user },(err,result)=>{
-    console.log(result)
-    if (result.length>0) {
-      res.send(false);
+  let user = req.body.data.username //client input
+  let pw = req.body.data.password//client input
+
+	User.find({ name: user },(err,result)=>{
+    if (result.length > 0) {
+      res.send('Sorry, you already exist');
     }
     else {
-      let newUser = new User({name:user,password:pw});
+      let newUser = new User( {name:user, password:pw} );
       newUser.save()
-      .then(res.send(true))
+      .then(res.send('User has been saved'));
     }
   })
 })
+
+
 app.listen(3000, () => console.log('listening on port 3000'));
