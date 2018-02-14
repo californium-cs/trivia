@@ -24,9 +24,7 @@ app.get('/getData', dataController.getData, dataController.formatData, (req, res
 app.post('/login', (req, res) => {
   const user = req.body.name;
   const pw = req.body.password;
-  console.log(`inside the login ${user} ${pw}`);
   User.find({ name: user, password: pw }, (err, result) => {
-    console.log(result);
     if (result.length) {
       res.send(true);
     } else {
@@ -40,7 +38,6 @@ app.post('/signup', (req, res) => {
   const user = req.body.name;
   const pw = req.body.password;
   User.find({ name: user }, (err, result) => {
-    console.log(result);
     if (result.length > 0) {
       res.send(false);
     } else {
@@ -51,4 +48,5 @@ app.post('/signup', (req, res) => {
   });
 });
 
-app.listen(3001, () => console.log('listening on port 3001'));
+app.listen(3000, () => console.log('listening on port 3000'));
+
