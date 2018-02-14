@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const app = express();
 const path = require('path');
-dataController = require('./controllers/dataController.js');
+
+const dataController = require('./controllers/dataController.js');
 const User = require('./model/userModel.js');
+
 
 
 
