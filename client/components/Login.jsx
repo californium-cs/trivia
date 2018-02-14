@@ -18,12 +18,12 @@ class Login extends Component {
           <div id="login-buttons">
             <RaisedButton
               label="Login"
-              labelColor="gray"
+              labelColor="#808080"
               onClick={this.props.login}
             />
             <RaisedButton
               label="Sign up"
-              labelColor="gray"
+              labelColor="#808080"
               onClick={this.props.signup}
             />
           </div>
